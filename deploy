@@ -1,33 +1,16 @@
-name: Deploy Node App to EC2
-
+name: CI/CD Pipeline
 on:
   push:
     branches:
       - main
-
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Setup SSH
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
-        chmod 400 key.pem
-
-    - name: Copy Files to EC2
-      run: |
-        rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.TARGET_DIR }}
-
-    - name: Run App on EC2 with PM2
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd ${{ secrets.TARGET_DIR }}
-          npm install
-          pm2 delete all || true
-          pm2 start index.js --name my-node-app
-          pm2 save
-        EOF
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install -r backend/requirements.txt
+      - run: pytest
