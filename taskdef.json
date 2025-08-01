@@ -1,0 +1,21 @@
+{
+  "family": "my-service1",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "my-service",
+      "image": "512672395252.dkr.ecr.us-east-1.amazonaws.com/my-service:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::<your_account_id>:role/ecsTaskExecutionRole"
+}
